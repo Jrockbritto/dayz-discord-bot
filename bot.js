@@ -102,15 +102,22 @@ const client = new Client({
           // !track
   
           case 'track':
-            message.guild.me.setNickname("DayzServer");
-            clearInterval(interval);
-            resetPresence(client);
-            setNick(client,message, args[0])
-            interval = setInterval(() => track(client, message, args[0]),60000)
-              message.reply("Rastreando id...").then(msg => {
-                setTimeout(() => msg.delete(), 10000)
+            if(args[0]){
+              message.guild.me.setNickname("DayzServer");
+              clearInterval(interval);
+              resetPresence(client);
+              setNick(client,message, args[0])
+              interval = setInterval(() => track(client, message, args[0]),60000)
+                message.reply("Rastreando id...").then(msg => {
+                  setTimeout(() => msg.delete(), 10000)
+                })
+                .catch(console.error);
+            } else {
+              message.reply('Use !track <ServerID> : para rastrear o status do servidor.').then(msg => {
+                setTimeout(() => msg.delete(), 20000)
               })
               .catch(console.error);
+            }
             break;
 
           case 'stop':
@@ -154,34 +161,41 @@ const client = new Client({
           case 'status':
             axios.get('https://api.trackyserver.com/widget/index.php?id=' + args[0])
             .then((response) => {
-              if(response.data){
-                let [ time ] = response.data.resources.match(/(\d\d?:\d\d)/g)
-                const StatusEmbed = new Discord.MessageEmbed()
-                .setColor('#0ED611')
-                .setTitle('Status!  :bar_chart:')
-                .setDescription(`>>> Name: ${response.data.name}`)
-                .setThumbnail('https://fontmeme.com/images/Dayz-Game.jpg')
-                .addFields(
-                  { name: 'Ip', value: response.data.ip, inline: true},
-                  { name: 'Players', value: response.data.playerscount, inline: true },
-                  { name: 'Mapa', value: response.data.map, inline: true })
-                .addFields(
-                  { name: 'Horario', value: time, inline: true},
-                  { name: 'País', value: response.data.country, inline: true },
-                  { name: 'Versão', value: response.data.version, inline: true },
-                )
-                .setTimestamp()
-
-                message.reply({ embeds: [StatusEmbed] }).then(msg => {
+              try{
+                if(response.data){
+                  let [ time ] = response.data.resources.match(/(\d\d?:\d\d)/g)
+                  const StatusEmbed = new Discord.MessageEmbed()
+                  .setColor('#0ED611')
+                  .setTitle('Status!  :bar_chart:')
+                  .setDescription(`>>> Name: ${response.data.name}`)
+                  .setThumbnail('https://fontmeme.com/images/Dayz-Game.jpg')
+                  .addFields(
+                    { name: 'Ip', value: response.data.ip, inline: true},
+                    { name: 'Players', value: response.data.playerscount, inline: true },
+                    { name: 'Mapa', value: response.data.map, inline: true })
+                  .addFields(
+                    { name: 'Horario', value: time, inline: true},
+                    { name: 'País', value: response.data.country, inline: true },
+                    { name: 'Versão', value: response.data.version, inline: true },
+                  )
+                  .setTimestamp()
+  
+                  message.reply({ embeds: [StatusEmbed] }).then(msg => {
+                    setTimeout(() => msg.delete(), 20000)
+                  })
+                  .catch(console.error);
+                } else {
+                message.reply("Não foi possivel encontrar o servidor...").then(msg => {
                   setTimeout(() => msg.delete(), 20000)
                 })
                 .catch(console.error);
-              } else {
-              message.reply("Não foi possivel encontrar o servidor...").then(msg => {
-                setTimeout(() => msg.delete(), 20000)
-              })
-              .catch(console.error);
-              } 
+                } 
+              }catch{
+                message.reply('Use !status <ServerID> : para mostrar o status do servidor.').then(msg => {
+                  setTimeout(() => msg.delete(), 20000)
+                })
+                .catch(console.error);
+                } 
             })
             break;
           case 'help':
