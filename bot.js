@@ -167,7 +167,7 @@ const client = new Client({
                   const StatusEmbed = new Discord.MessageEmbed()
                   .setColor('#0ED611')
                   .setTitle('Status!  :bar_chart:')
-                  .setDescription(`>>> Name: ${response.data.name}`)
+                  .setDescription(`>>> ${response.data.name}`)
                   .setThumbnail('https://fontmeme.com/images/Dayz-Game.jpg')
                   .addFields(
                     { name: 'Ip', value: response.data.ip, inline: true},
