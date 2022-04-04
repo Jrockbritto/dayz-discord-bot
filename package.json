@@ -1,0 +1,30 @@
+{
+
+    "name": "dayz-tracker",
+
+    "version": "1.0.0",
+
+    "description": "A bot that tracks infos from a server",
+
+    "main": "bot.js",
+
+    "author": "João Rock",
+
+    "type": "module",
+    
+    "scripts": {
+        "start": "node bot.js"
+    },
+
+    "dependencies": {
+
+        "axios": "^0.26.1",
+
+        "discord.js": "^13.6.0",
+
+        "dotenv": "^16.0.0"
+
+    }
+
+}
+
