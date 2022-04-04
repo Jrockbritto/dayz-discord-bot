@@ -1,14 +1,15 @@
-import pkg from 'discord.js';
+import Discord from 'discord.js';
 
 import axios from "axios";
 
 import dotenv from "dotenv"
 
-const { Client } = pkg;
+const { Client } = Discord;
 
 var interval;
 let old_players = null;
 let old_status = null;
+let old_time = null
 
 dotenv.config();
 
@@ -46,6 +47,8 @@ const updatePresence = (client, response) => {
 
   let players = response.data.playerscount
 
+  let time = response.data.resources.match(/(\d\d?:\d\d)/g)
+
   let [now, maxPlayers] = players.split('/')
   
   let playerRate = parseFloat(parseInt(now)/parseInt(maxPlayers)).toFixed(1)
@@ -61,11 +64,12 @@ const updatePresence = (client, response) => {
   }
   console.log({ maxPlayers, now, playerRate, status })
   console.log('updatePresence...')
-  console.log({old_status,status,old_players,players,condition:(old_players != players || old_status != status)})
+  console.log({old_status,status,old_players,players,time,condition:(old_players != players || old_status != status || old_time != time)})
   if(old_players != players || old_status != status){
-    client.user.setPresence({ activities: [{ name: players, type: 'PLAYING' }], status: status });
+    client.user.setPresence({ activities: [{ name: `${players} ${time}`, type: 'PLAYING' }], status: status });
     old_players = players
     old_status = status
+    old_time = time
   }
 };
 
@@ -102,7 +106,7 @@ const client = new Client({
             clearInterval(interval);
             resetPresence(client);
             setNick(client,message, args[0])
-            interval = setInterval(() => track(client, message, args[0]),10000)
+            interval = setInterval(() => track(client, message, args[0]),60000)
               message.reply("Rastreando id...").then(msg => {
                 setTimeout(() => msg.delete(), 10000)
               })
@@ -120,11 +124,18 @@ const client = new Client({
             break;
 
           case 'help':
-            message.reply(`"!track <id>": usado para rastrear um sevidor (atualiza a cada 10 segundos).\n"!stop" : restaura o estado inicial do Bot e para o rastreamento.`).then(msg => {
-              setTimeout(() => msg.delete(), 15000)
+            const exampleEmbed = new Discord.MessageEmbed()
+            .setColor('#0ED611')
+            .setTitle(':grey_question: HELP!')
+            .setDescription(`>>> "!track <id>": usado para rastrear um sevidor (atualiza a cada 60 segundos).\n"!stop" : restaura o estado inicial do Bot e para o rastreamento.`)
+            .setThumbnail('https://fontmeme.com/images/Dayz-Game.jpg')
+            .addField('Buscar ID', 'https://www.trackyserver.com/dayz-server/', true)
+            .setTimestamp()
+
+            message.reply({ embeds: [exampleEmbed] }).then(msg => {
+              setTimeout(() => msg.delete(), 20000)
             })
             .catch(console.error);
-            break;
           // Just add any case commands if you want to..
       }
     }
