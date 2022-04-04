@@ -108,7 +108,7 @@ const client = new Client({
               resetPresence(client);
               setNick(client,message, args[0])
               interval = setInterval(() => track(client, message, args[0]),60000)
-                message.reply("Rastreando id...").then(msg => {
+                message.reply("Rastreando id... (Tracking id").then(msg => {
                   setTimeout(() => msg.delete(), 10000)
                 })
                 .catch(console.error);
@@ -172,12 +172,13 @@ const client = new Client({
                   .addFields(
                     { name: 'Ip', value: response.data.ip, inline: true},
                     { name: 'Players', value: response.data.playerscount, inline: true },
-                    { name: 'Mapa', value: response.data.map, inline: true })
+                    { name: 'Mapa (Map)', value: response.data.map, inline: true })
                   .addFields(
-                    { name: 'Horario', value: time, inline: true},
-                    { name: 'País', value: response.data.country, inline: true },
-                    { name: 'Versão', value: response.data.version, inline: true },
+                    { name: 'Horario (Time)', value: time, inline: true},
+                    { name: 'País (Country)', value: response.data.country, inline: true },
+                    { name: 'Versão (Version)', value: response.data.version, inline: true },
                   )
+                  .addField('Mais informações (More info)', 'https://www.trackyserver.com/server/'+args[0])
                   .setTimestamp()
   
                   message.reply({ embeds: [StatusEmbed] }).then(msg => {
@@ -204,7 +205,7 @@ const client = new Client({
             .setTitle('HELP! :grey_question:')
             .setDescription(`>>> "!track <id>": usado para rastrear um sevidor (atualiza a cada 60 segundos).\n"!stop" : restaura o estado inicial do Bot e para o rastreamento.\n"!status <ServerID>" : Mostra os status do servidor.`)
             .setThumbnail('https://fontmeme.com/images/Dayz-Game.jpg')
-            .addField('Buscar ID', 'https://www.trackyserver.com/dayz-server/', true)
+            .addField('Buscar ID (Search ID)', 'https://www.trackyserver.com/dayz-server/', true)
             .setTimestamp()
 
             message.reply({ embeds: [helpEmbed] }).then(msg => {
