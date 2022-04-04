@@ -9,7 +9,8 @@ const { Client } = Discord;
 var interval;
 let old_players = null;
 let old_status = null;
-let old_time = null
+let old_time = null;
+let notifyed = null;
 
 dotenv.config();
 
@@ -18,7 +19,7 @@ const track = (client, message, id) => {
   .then((response) => {
     console.log("updating...")
     if(response.data){
-        updatePresence(client, response);
+        updatePresence(client, response, id, message);
     } else {
       message.reply("Não foi possivel encontrar o servidor...")
       clearInterval(interval)
@@ -27,21 +28,22 @@ const track = (client, message, id) => {
 }
 
 const setNick = (client,message,id) => {
+  let name = null;
   axios.get('https://api.trackyserver.com/widget/index.php?id=' + id)
   .then((response) => {
     console.log('updateNick...')
     if(response.data.name.length > 32) {
-      message.guild.me.setNickname(response.data.name.substring(0,29) + '...');
-      updatePresence(client, response)
+      name  = response.data.name.substring(0,29) + '...';
     }
     else{
-      message.guild.me.setNickname(response.data.name);
-      updatePresence(client, response)
+      name  =  response.data.name;
     }
+    message.guild.me.setNickname(name);
+    updatePresence(client, response, id, message)
   })
 }
 
-const updatePresence = (client, response) => {
+const updatePresence = (client, response, id, message) => {
   
   let status = null
 
@@ -53,18 +55,35 @@ const updatePresence = (client, response) => {
   
   let playerRate = parseFloat(parseInt(now)/parseInt(maxPlayers)).toFixed(1)
 
-  if(playerRate < 0.3){
+  if(playerRate <= 0.3){
     status = 'online'
+    notifyed = false;
   }
-  else if(playerRate < 0.7){
-    status = 'idle'
+  else if(playerRate <= 0.7){
+    status = 'idle';
+    notifyed = false;
   }
   else{
-    status = 'dnd'
+    status = 'dnd';
+    if(!notifyed) {
+      const populationEmbed = new Discord.MessageEmbed()
+        .setColor('#0ED611')
+        .setTitle('High Population!  :people_wrestling: ')
+        .setDescription(`>>> O servidor está com ${playerRate*100}% da sua capacidade!`)
+        .setThumbnail('https://fontmeme.com/images/Dayz-Game.jpg')
+        .addField('Mais informações (More info)', 'https://www.trackyserver.com/server/'+ id)
+        .setTimestamp()
+
+        message.reply({ embeds: [populationEmbed] }).then(msg => {
+          setTimeout(() => msg.delete(), 60000)
+        })
+        .catch(console.error);
+        notifyed = true;
+    }
   }
   console.log({ maxPlayers, now, playerRate, status })
   console.log('updatePresence...')
-  console.log({old_status,status,old_players,players,old_time,time,condition:(old_players != players || old_status != status || old_time != time)})
+  console.log({old_status,status,old_players,players,old_time,time,notifyed,condition:(old_players != players || old_status != status || old_time != time)})
   if(old_players != players || old_status != status){
     client.user.setPresence({ activities: [{ name: `${players} ${time}`, type: 'PLAYING' }], status: status });
     old_players = players
@@ -108,7 +127,7 @@ const client = new Client({
               resetPresence(client);
               setNick(client,message, args[0])
               interval = setInterval(() => track(client, message, args[0]),60000)
-                message.reply("Rastreando id... (Tracking id").then(msg => {
+                message.reply("Rastreando id... (Tracking id)").then(msg => {
                   setTimeout(() => msg.delete(), 10000)
                 })
                 .catch(console.error);
@@ -122,7 +141,7 @@ const client = new Client({
 
           case 'stop':
             clearInterval(interval);
-            message.reply("Parando...").then(msg => {
+            message.reply("Parando... (stopping)").then(msg => {
               setTimeout(() => msg.delete(), 10000)
             })
             .catch(console.error);
