@@ -123,16 +123,77 @@ const client = new Client({
             message.guild.me.setNickname("DayzServer");
             break;
 
+          case 'Rock':
+            message.reply("Melhor jogador de Dayz").then(msg => {
+              setTimeout(() => msg.delete(), 10000)
+            })
+            .catch(console.error);
+            break;
+ 
+          case 'Pedro':
+            message.reply("Veiaco").then(msg => {
+              setTimeout(() => msg.delete(), 10000)
+            })
+            .catch(console.error);
+            break;
+ 
+          case 'Vitor':
+            message.reply("SEU BOOOOSTA!!!").then(msg => {
+              setTimeout(() => msg.delete(), 10000)
+            })
+            .catch(console.error);
+            break;
+ 
+          case 'Rafael':
+            message.reply("Tomar no cu!").then(msg => {
+              setTimeout(() => msg.delete(), 10000)
+            })
+            .catch(console.error);
+            break;
+ 
+          case 'status':
+            axios.get('https://api.trackyserver.com/widget/index.php?id=' + args[0])
+            .then((response) => {
+              if(response.data){
+                let [ time ] = response.data.resources.match(/(\d\d?:\d\d)/g)
+                const StatusEmbed = new Discord.MessageEmbed()
+                .setColor('#0ED611')
+                .setTitle('Status!  :bar_chart:')
+                .setDescription(`>>> Name: ${response.data.name}`)
+                .setThumbnail('https://fontmeme.com/images/Dayz-Game.jpg')
+                .addFields(
+                  { name: 'Ip', value: response.data.ip, inline: true},
+                  { name: 'Players', value: response.data.playerscount, inline: true },
+                  { name: 'Mapa', value: response.data.map, inline: true })
+                .addFields(
+                  { name: 'Horario', value: time, inline: true},
+                  { name: 'País', value: response.data.country, inline: true },
+                  { name: 'Versão', value: response.data.version, inline: true },
+                )
+                .setTimestamp()
+
+                message.reply({ embeds: [StatusEmbed] }).then(msg => {
+                  setTimeout(() => msg.delete(), 20000)
+                })
+                .catch(console.error);
+              } else {
+              message.reply("Não foi possivel encontrar o servidor...").then(msg => {
+                setTimeout(() => msg.delete(), 20000)
+              })
+              .catch(console.error);
+              } 
+            })
+            break;
           case 'help':
-            const exampleEmbed = new Discord.MessageEmbed()
+            const helpEmbed = new Discord.MessageEmbed()
             .setColor('#0ED611')
-            .setTitle(':grey_question: HELP!')
-            .setDescription(`>>> "!track <id>": usado para rastrear um sevidor (atualiza a cada 60 segundos).\n"!stop" : restaura o estado inicial do Bot e para o rastreamento.`)
+            .setTitle('HELP! :grey_question:')
+            .setDescription(`>>> "!track <id>": usado para rastrear um sevidor (atualiza a cada 60 segundos).\n"!stop" : restaura o estado inicial do Bot e para o rastreamento.\n"!status <ServerID>" : Mostra os status do servidor.`)
             .setThumbnail('https://fontmeme.com/images/Dayz-Game.jpg')
             .addField('Buscar ID', 'https://www.trackyserver.com/dayz-server/', true)
             .setTimestamp()
 
-            message.reply({ embeds: [exampleEmbed] }).then(msg => {
+            message.reply({ embeds: [helpEmbed] }).then(msg => {
               setTimeout(() => msg.delete(), 20000)
             })
             .catch(console.error);
