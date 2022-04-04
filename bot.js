@@ -47,7 +47,7 @@ const updatePresence = (client, response) => {
 
   let players = response.data.playerscount
 
-  let time = response.data.resources.match(/(\d\d?:\d\d)/g)
+  let [ time ] = response.data.resources.match(/(\d\d?:\d\d)/g)
 
   let [now, maxPlayers] = players.split('/')
   
@@ -64,7 +64,7 @@ const updatePresence = (client, response) => {
   }
   console.log({ maxPlayers, now, playerRate, status })
   console.log('updatePresence...')
-  console.log({old_status,status,old_players,players,time,condition:(old_players != players || old_status != status || old_time != time)})
+  console.log({old_status,status,old_players,players,old_time,time,condition:(old_players != players || old_status != status || old_time != time)})
   if(old_players != players || old_status != status){
     client.user.setPresence({ activities: [{ name: `${players} ${time}`, type: 'PLAYING' }], status: status });
     old_players = players
