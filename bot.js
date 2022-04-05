@@ -59,7 +59,7 @@ const updatePresence = (client, response, id, message) => {
     status = 'online'
     notifyed = false;
   }
-  else if(playerRate <= 0.7){
+  else if(playerRate < 0.7){
     status = 'idle';
     notifyed = false;
   }
@@ -81,14 +81,14 @@ const updatePresence = (client, response, id, message) => {
         notifyed = true;
     }
   }
-  console.log({ maxPlayers, now, playerRate, status })
-  console.log('updatePresence...')
+  console.log({ maxPlayers, now, playerRate, status });
+  console.log('updatePresence...');
   console.log({old_status,status,old_players,players,old_time,time,notifyed,condition:(old_players != players || old_status != status || old_time != time)})
   if(old_players != players || old_status != status){
     client.user.setPresence({ activities: [{ name: `${players} ${time}`, type: 'PLAYING' }], status: status });
-    old_players = players
-    old_status = status
-    old_time = time
+    old_players = players;
+    old_status = status;
+    old_time = time;
   }
 };
 
@@ -122,6 +122,9 @@ const client = new Client({
   
           case 'track':
             if(args[0]){
+              old_players = null;
+              old_status = null;
+              old_time = null;
               message.guild.me.setNickname("DayzServer");
               clearInterval(interval);
               resetPresence(client);
