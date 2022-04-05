@@ -167,7 +167,7 @@ const client = new Client({
             break;
  
           case 'Babi':
-            message.reply("MT VACILONA!!!!!!!!!!!!!!!!!!!!!!").then(msg => {
+            message.reply("LINDA D+!!!!!!!!!!!!").then(msg => {
               setTimeout(() => msg.delete(), 10000)
             })
             .catch(console.error);
