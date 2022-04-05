@@ -166,6 +166,13 @@ const client = new Client({
             .catch(console.error);
             break;
  
+          case 'Babi':
+            message.reply("MT VACILONA!!!!!!!!!!!!!!!!!!!!!!").then(msg => {
+              setTimeout(() => msg.delete(), 10000)
+            })
+            .catch(console.error);
+            break;
+ 
           case 'Vitor':
             message.reply("SEU BOOOOSTA!!!").then(msg => {
               setTimeout(() => msg.delete(), 10000)
