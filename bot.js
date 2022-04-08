@@ -44,7 +44,8 @@ const setNick = (client,message,id) => {
 }
 
 const updatePresence = (client, response, id, message) => {
-  
+  try{
+    
   let status = null
 
   let players = response.data.playerscount
@@ -90,6 +91,11 @@ const updatePresence = (client, response, id, message) => {
     old_status = status;
     old_time = time;
   }
+  }
+  catch(e) {
+    console.error(e);
+    console.log(response.data)
+  }
 };
 
 const resetPresence = async (client) => {
@@ -129,7 +135,7 @@ const client = new Client({
               clearInterval(interval);
               resetPresence(client);
               setNick(client,message, args[0])
-              interval = setInterval(() => track(client, message, args[0]),60000)
+              interval = setInterval(() => track(client, message, args[0]),120000)
                 message.reply("Rastreando id... (Tracking id)").then(msg => {
                   setTimeout(() => msg.delete(), 10000)
                 })
@@ -168,6 +174,20 @@ const client = new Client({
  
           case 'Babi':
             message.reply("LINDA D+!!!!!!!!!!!!").then(msg => {
+              setTimeout(() => msg.delete(), 10000)
+            })
+            .catch(console.error);
+            break;
+
+          case 'Flamengo':
+            message.reply("é é o Ronaldinho Gaucho ronal ronaldinho Gaucho é é Thiago Neves!! To sem freio to sem freio é o bonde do mengão sem freio!!!!").then(msg => {
+              setTimeout(() => msg.delete(), 10000)
+            })
+            .catch(console.error);
+            break;
+          
+          case "Pleu":
+            message.reply("Plicty Plecty!").then(msg => {
               setTimeout(() => msg.delete(), 10000)
             })
             .catch(console.error);
@@ -232,7 +252,7 @@ const client = new Client({
             const helpEmbed = new Discord.MessageEmbed()
             .setColor('#0ED611')
             .setTitle('HELP! :grey_question:')
-            .setDescription(`>>> "!track <id>": usado para rastrear um sevidor (atualiza a cada 60 segundos).\n"!stop" : restaura o estado inicial do Bot e para o rastreamento.\n"!status <ServerID>" : Mostra os status do servidor.`)
+            .setDescription(`>>> "!track <id>": usado para rastrear um sevidor (atualiza a cada 2 minutos.\n"!stop" : restaura o estado inicial do Bot e para o rastreamento.\n"!status <ServerID>" : Mostra os status do servidor.`)
             .setThumbnail('https://fontmeme.com/images/Dayz-Game.jpg')
             .addField('Buscar ID (Search ID)', 'https://www.trackyserver.com/dayz-server/', true)
             .setTimestamp()
