@@ -118,7 +118,7 @@ const client = new Client({
 
       var args = message.content.substring(1).split(' ');
   
-      var cmd = args[0];
+      var cmd = args[0].toLowerCase();
   
       args = args.splice(1);
 
@@ -158,49 +158,49 @@ const client = new Client({
             message.guild.me.setNickname("DayzServer");
             break;
 
-          case 'Rock':
+          case 'rock':
             message.reply("Melhor jogador de Dayz").then(msg => {
               setTimeout(() => msg.delete(), 10000)
             })
             .catch(console.error);
             break;
  
-          case 'Pedro':
+          case 'pedro':
             message.reply("Veiaco").then(msg => {
               setTimeout(() => msg.delete(), 10000)
             })
             .catch(console.error);
             break;
  
-          case 'Babi':
+          case 'babi':
             message.reply("LINDA D+!!!!!!!!!!!!").then(msg => {
               setTimeout(() => msg.delete(), 10000)
             })
             .catch(console.error);
             break;
 
-          case 'Flamengo':
+          case 'flamengo':
             message.reply("é é o Ronaldinho Gaucho ronal ronaldinho Gaucho é é Thiago Neves!! To sem freio to sem freio é o bonde do mengão sem freio!!!!").then(msg => {
               setTimeout(() => msg.delete(), 10000)
             })
             .catch(console.error);
             break;
           
-          case "Pleu":
+          case "pleu":
             message.reply("Plicty Plecty!").then(msg => {
               setTimeout(() => msg.delete(), 10000)
             })
             .catch(console.error);
             break;
  
-          case 'Vitor':
+          case 'vitor':
             message.reply("SEU BOOOOSTA!!!").then(msg => {
               setTimeout(() => msg.delete(), 10000)
             })
             .catch(console.error);
             break;
  
-          case 'Rafael':
+          case 'rafael':
             message.reply("Tomar no cu!").then(msg => {
               setTimeout(() => msg.delete(), 10000)
             })
