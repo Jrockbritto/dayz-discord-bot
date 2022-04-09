@@ -32,6 +32,7 @@ const setNick = (client,message,id) => {
   let name = null;
   axios.get('https://api.trackyserver.com/widget/index.php?id=' + id)
   .then((response) => {
+   if(response.data){
     console.log('updateNick...');
     if(response.data.name.length > 32) {
       name  = response.data.name.substring(0,29) + '...';
@@ -41,6 +42,13 @@ const setNick = (client,message,id) => {
     }
     message.guild.me.setNickname(name);
     updatePresence(client, response, id, message)
+  
+   } else {
+    message.reply("Não foi possivel encontrar o servidor...").then(msg => {
+      setTimeout(() => msg.delete(), 20000)
+    })
+    .catch(console.error);
+    } 
   })
 }
 
@@ -240,91 +248,91 @@ const client = new Client({
             break;
  
           case 'status':
-            axios.get('https://api.trackyserver.com/widget/index.php?id=' + args[0])
-            .then((response) => {
-              try{
-                if(response.data.playerscount != 'offline') {
-                  if(response.data){
-                    let [ time ] = response.data.resources.match(/(\d\d?:\d\d)/g)
-
-                    let unix_timestamp = response.data.date
-
-                    var date = new Date(unix_timestamp);
-                    // Hours part from the timestamp
-                    var hours = date.getHours();
-                    // Minutes part from the timestamp
-                    var minutes = "0" + date.getMinutes();
-                    // Seconds part from the timestamp
-                    var seconds = "0" + date.getSeconds();
-
-                    // Will display time in 10:30:23 format
-                    var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
-
-                    const StatusEmbed = new Discord.MessageEmbed()
-                    .setColor('#0ED611')
-                    .setTitle('Status!  :bar_chart:')
-                    .setDescription(`>>> ${response.data.name}`)
-                    .setThumbnail('https://fontmeme.com/images/Dayz-Game.jpg')
-                    .addFields(
-                      { name: 'Ip', value: response.data.ip, inline: true},
-                      { name: 'Players', value: response.data.playerscount, inline: true },
-                      { name: 'Mapa (Map)', value: response.data.map, inline: true })
-                    .addFields(
-                      { name: 'Horario (Time)', value: time, inline: true},
-                      { name: 'País (Country)', value: response.data.country, inline: true },
-                      { name: 'Versão (Version)', value: response.data.version, inline: true },
-                    )
-                    .addFields(
-                      { name: 'Mais informações (More info)', value: 'https://www.trackyserver.com/server/'+args[0], inline: true},
-                      { name: 'Atualizado em (updated at)', value: formattedTime, inline: true },
-                    )
-                    .setTimestamp()
-    
-                    message.reply({ embeds: [StatusEmbed] }).then(msg => {
-                      setTimeout(() => msg.delete(), 30000)
+            if(args[0]){
+              axios.get('https://api.trackyserver.com/widget/index.php?id=' + args[0])
+              .then((response) => {
+                try{
+                  if(response.data.playerscount != 'offline') {
+                    if(response.data){
+                      let [ time ] = response.data.resources.match(/(\d\d?:\d\d)/g)
+  
+                      let unix_timestamp = response.data.date
+  
+                      var date = new Date(unix_timestamp).toLocaleString("pt-BR", {timeZone: "America/Sao_Paulo"});
+                      
+                      var formattedTime = date.split(" ")[1];
+  
+                      const StatusEmbed = new Discord.MessageEmbed()
+                      .setColor('#0ED611')
+                      .setTitle('Status!  :bar_chart:')
+                      .setDescription(`>>> ${response.data.name}`)
+                      .setThumbnail('https://fontmeme.com/images/Dayz-Game.jpg')
+                      .addFields(
+                        { name: 'Ip', value: response.data.ip, inline: true},
+                        { name: 'Players', value: response.data.playerscount, inline: true },
+                        { name: 'Mapa (Map)', value: response.data.map, inline: true })
+                      .addFields(
+                        { name: 'Horario (Time)', value: time, inline: true},
+                        { name: 'País (Country)', value: response.data.country, inline: true },
+                        { name: 'Versão (Version)', value: response.data.version, inline: true },
+                      )
+                      .addFields(
+                        { name: 'Mais informações (More info)', value: 'https://www.trackyserver.com/server/'+args[0], inline: true},
+                        { name: 'Atualizado em (updated at)', value: formattedTime, inline: true },
+                      )
+                      .setTimestamp()
+      
+                      message.reply({ embeds: [StatusEmbed] }).then(msg => {
+                        setTimeout(() => msg.delete(), 30000)
+                      })
+                      .catch(console.error);
+                    } else {
+                    message.reply("Não foi possivel encontrar o servidor...").then(msg => {
+                      setTimeout(() => msg.delete(), 20000)
                     })
                     .catch(console.error);
+                    } 
                   } else {
-                  message.reply("Não foi possivel encontrar o servidor...").then(msg => {
+                      let [ time ] = 'offline'
+                      const StatusEmbed = new Discord.MessageEmbed()
+                      .setColor('#0ED611')
+                      .setTitle('Status!  :bar_chart:')
+                      .setDescription(`>>> Offline`)
+                      .setThumbnail('https://fontmeme.com/images/Dayz-Game.jpg')
+                      .addFields(
+                        { name: 'Ip', value: 'offline', inline: true},
+                        { name: 'Players', value: 'offline', inline: true },
+                        { name: 'Mapa (Map)', value: 'offline', inline: true })
+                      .addFields(
+                        { name: 'Horario (Time)', value: time, inline: true},
+                        { name: 'País (Country)', value: 'offline', inline: true },
+                        { name: 'Versão (Version)', value: 'offline', inline: true },
+                      )
+                      .addFields(
+                        { name: 'Mais informações (More info)', value: 'https://www.trackyserver.com/server/'+args[0], inline: true},
+                        { name: 'Atualizado em (updated at)', value: 'offline', inline: true },
+                      )
+                      .setTimestamp()
+      
+                      message.reply({ embeds: [StatusEmbed] }).then(msg => {
+                        setTimeout(() => msg.delete(), 20000)
+                      })
+                      .catch(console.error);
+                    }
+                }catch (e){
+                  console.error(e)
+                  message.reply('Erro ao gerar fazer ao gerar Status.').then(msg => {
                     setTimeout(() => msg.delete(), 20000)
                   })
                   .catch(console.error);
                   } 
-                } else {
-                    let [ time ] = 'offline'
-                    const StatusEmbed = new Discord.MessageEmbed()
-                    .setColor('#0ED611')
-                    .setTitle('Status!  :bar_chart:')
-                    .setDescription(`>>> Offline`)
-                    .setThumbnail('https://fontmeme.com/images/Dayz-Game.jpg')
-                    .addFields(
-                      { name: 'Ip', value: 'offline', inline: true},
-                      { name: 'Players', value: 'offline', inline: true },
-                      { name: 'Mapa (Map)', value: 'offline', inline: true })
-                    .addFields(
-                      { name: 'Horario (Time)', value: time, inline: true},
-                      { name: 'País (Country)', value: 'offline', inline: true },
-                      { name: 'Versão (Version)', value: 'offline', inline: true },
-                    )
-                    .addFields(
-                      { name: 'Mais informações (More info)', value: 'https://www.trackyserver.com/server/'+args[0], inline: true},
-                      { name: 'Atualizado em (updated at)', value: 'offline', inline: true },
-                    )
-                    .setTimestamp()
-    
-                    message.reply({ embeds: [StatusEmbed] }).then(msg => {
-                      setTimeout(() => msg.delete(), 20000)
-                    })
-                    .catch(console.error);
-                  }
-              }catch (e){
-                console.error(e)
-                message.reply('Use !status <ServerID> : para mostrar o status do servidor.').then(msg => {
-                  setTimeout(() => msg.delete(), 20000)
-                })
-                .catch(console.error);
-                } 
-            })
+              })
+            }else{
+              message.reply('Use !status <ServerID> : para mostrar o status do servidor.').then(msg => {
+                setTimeout(() => msg.delete(), 20000)
+              })
+              .catch(console.error);
+              } 
             break;
           case 'help':
             const helpEmbed = new Discord.MessageEmbed()
