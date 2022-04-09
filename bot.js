@@ -58,7 +58,7 @@ const updatePresence = (client, response, id, message) => {
 
         var date = new Date(unix_timestamp);
         // Hours part from the timestamp
-        var hours = date.getHours();
+        var hours = date.getHours() -3; // Fuso do Heroku
         // Minutes part from the timestamp
         var minutes = "0" + date.getMinutes();
         // Seconds part from the timestamp
