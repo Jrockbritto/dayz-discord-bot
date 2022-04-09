@@ -54,18 +54,11 @@ const updatePresence = (client, response, id, message) => {
 
         let [ time ] = response.data.resources.match(/(\d\d?:\d\d)/g);
 
-        let unix_timestamp = parseInt(response.data.date) - 3600 * 3
-
-        var date = new Date(unix_timestamp);
-        // Hours part from the timestamp
-        var hours = date.getHours(); // Fuso do Heroku
-        // Minutes part from the timestamp
-        var minutes = "0" + date.getMinutes();
-        // Seconds part from the timestamp
-        var seconds = "0" + date.getSeconds();
-
-        // Will display time in 10:30:23 format
-        var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+        let unix_timestamp = response.data.date;
+        console.log(response.data.date,unix_timestamp)
+        var date = new Date(unix_timestamp).toLocaleString("pt-BR", {timeZone: "America/Sao_Paulo"});
+       
+        let formattedTime = date.split(" ")[1];
 
         let [now, maxPlayers] = players.split('/');
         
