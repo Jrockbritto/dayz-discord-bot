@@ -54,7 +54,7 @@ const updatePresence = (client, response, id, message) => {
 
         let [ time ] = response.data.resources.match(/(\d\d?:\d\d)/g);
 
-        let unix_timestamp = response.data.date.parseInt() - 3600 * 3
+        let unix_timestamp = parseInt(response.data.date) - 3600 * 3
 
         var date = new Date(unix_timestamp);
         // Hours part from the timestamp
