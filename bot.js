@@ -11,6 +11,7 @@ let old_players = null;
 let old_status = null;
 let old_time = null;
 let notifyed = null;
+let notifyed_lag = null;
 let old_formattedTime = null;
 
 dotenv.config();
@@ -25,7 +26,52 @@ const track = (client, message, id) => {
       message.reply("Não foi possivel encontrar o servidor...");
       clearInterval(interval);
     }
-  })
+  }).catch(() => offline(client));
+}
+
+const offline_embed = (id, message) => {
+  let [ time ] = 'offline'
+                      const StatusEmbed = new Discord.MessageEmbed()
+                      .setColor('#0ED611')
+                      .setTitle('Status!  :bar_chart:')
+                      .setDescription(`>>> Offline`)
+                      .setThumbnail('https://fontmeme.com/images/Dayz-Game.jpg')
+                      .addFields(
+                        { name: 'Ip', value: 'offline', inline: true},
+                        { name: 'Players', value: 'offline', inline: true },
+                        { name: 'Mapa (Map)', value: 'offline', inline: true })
+                      .addFields(
+                        { name: 'Horario (Time)', value: time, inline: true},
+                        { name: 'País (Country)', value: 'offline', inline: true },
+                        { name: 'Versão (Version)', value: 'offline', inline: true },
+                      )
+                      .addFields(
+                        { name: 'Mais informações (More info)', value: 'https://www.trackyserver.com/server/'+id, inline: true},
+                        { name: 'Atualizado em (updated at)', value: 'offline', inline: true },
+                      )
+                      .setTimestamp()
+      
+                      message.reply({ embeds: [StatusEmbed] }).then(msg => {
+                        setTimeout(() => msg.delete(), 20000)
+                      })
+                      .catch(console.error);
+}
+
+const offline = (client) => {
+          
+  let status = 'dnd';
+
+  let players = 'offline';
+
+  let time = 'no-data'
+
+  console.log({old_status,status,old_players,players,old_time,time,condition:(old_players != players || old_status != status || old_time != time)})
+  if(old_players != players || old_status != status){
+    client.user.setPresence({ activities: [{ name: `${players} ${time}` }], status: status });
+    old_players = players;
+    old_status = status;
+    old_time = time;
+  }
 }
 
 const setNick = (client,message,id) => {
@@ -49,7 +95,7 @@ const setNick = (client,message,id) => {
     })
     .catch(console.error);
     } 
-  })
+  }).catch(() => offline(client));
 }
 
 const updatePresence = (client, response, id, message) => {
@@ -69,7 +115,7 @@ const updatePresence = (client, response, id, message) => {
         let formattedTime = date.split(" ")[1];
 
         let [now, maxPlayers] = players.split('/');
-        
+
         let playerRate = parseFloat(parseInt(now)/parseInt(maxPlayers)).toFixed(1);
 
         if(playerRate <= 0.3){
@@ -82,47 +128,53 @@ const updatePresence = (client, response, id, message) => {
         }
         else{
           status = 'dnd';
-          if(!notifyed) {
-            const populationEmbed = new Discord.MessageEmbed()
-              .setColor('#0ED611')
-              .setTitle('High Population!  :people_wrestling: ')
-              .setDescription(`>>> O servidor está com ${playerRate*100}% da sua capacidade! `)
-              .setThumbnail('https://fontmeme.com/images/Dayz-Game.jpg')
-              .addField('Mais informações (More info)' , 'https://www.trackyserver.com/server/'+ id)
-              .setTimestamp()
-
-              message.channel.send({content:'@everyone', embeds: [populationEmbed] }).then(msg => {
-                setTimeout(() => msg.delete(), 60000)
-              })
-              .catch(console.error);
-              notifyed = true;
+          if(now > 50){
+            if(!notifyed_lag) {
+              const populationEmbed = new Discord.MessageEmbed()
+                .setColor('#0ED611')
+                .setTitle('Lag Alert!  :coffin:  :skull: :skull_crossbones:  ')
+                .setDescription(`>>> O servidor está com ${playerRate*100}% da sua capacidade!\npodendo resultar em LAG! `)
+                .setThumbnail('https://fontmeme.com/images/Dayz-Game.jpg')
+                .addField('Mais informações (More info)' , 'https://www.trackyserver.com/server/'+ id)
+                .setTimestamp()
+  
+                message.channel.send({content:'@everyone', embeds: [populationEmbed] }).then(msg => {
+                  setTimeout(() => msg.delete(), 60000)
+                })
+                .catch(console.error);
+                notifyed_lag = true;
+            }
+          } else {
+            notifyed_lag = false;
+            if(!notifyed) {
+              const populationEmbed = new Discord.MessageEmbed()
+                .setColor('#0ED611')
+                .setTitle('High Population!  :people_wrestling: ')
+                .setDescription(`>>> O servidor está com ${playerRate*100}% da sua capacidade! `)
+                .setThumbnail('https://fontmeme.com/images/Dayz-Game.jpg')
+                .addField('Mais informações (More info)' , 'https://www.trackyserver.com/server/'+ id)
+                .setTimestamp()
+  
+                message.channel.send({content:'@everyone', embeds: [populationEmbed] }).then(msg => {
+                  setTimeout(() => msg.delete(), 60000)
+                })
+                .catch(console.error);
+                notifyed = true;
+            }
           }
         }
         console.log({ maxPlayers, now, playerRate, status });
         console.log('updatePresence...');
         console.log({old_status,status,old_players,players,old_time,time,notifyed,old_formattedTime,formattedTime,condition:(old_players != players || old_status != status || old_time != time || old_formattedTime != formattedTime)})
         if(old_players != players || old_status != status || old_time != time || old_formattedTime != formattedTime){
-          client.user.setPresence({ activities: [{ name: `${players} ${time}\nupdated at: ${formattedTime}`, type: 'PLAYING' }], status: status });
+          client.user.setPresence({ activities: [{ name: `${players} ${time}\nupdated at: ${formattedTime}` }], status: status });
           old_players = players;
           old_status = status;
           old_time = time;
           old_formattedTime = formattedTime;
         }
     } else {
-              
-      let status = 'dnd';
-
-      let players = 'offline';
-
-      let time = 'no-data'
-
-      console.log({old_status,status,old_players,players,old_time,time,condition:(old_players != players || old_status != status || old_time != time)})
-      if(old_players != players || old_status != status){
-        client.user.setPresence({ activities: [{ name: `${players} ${time}`, type: 'PLAYING' }], status: status });
-        old_players = players;
-        old_status = status;
-        old_time = time;
-      }
+      offline(client);
     }
   }
   catch(e) {
@@ -168,7 +220,7 @@ const client = new Client({
               clearInterval(interval);
               resetPresence(client);
               setNick(client,message, args[0])
-              interval = setInterval(() => track(client, message, args[0]),120000)
+              interval = setInterval(() => track(client, message, args[0]),10000)
                 message.reply("Rastreando id... (Tracking id)").then(msg => {
                   setTimeout(() => msg.delete(), 10000)
                 })
@@ -293,31 +345,7 @@ const client = new Client({
                     .catch(console.error);
                     } 
                   } else {
-                      let [ time ] = 'offline'
-                      const StatusEmbed = new Discord.MessageEmbed()
-                      .setColor('#0ED611')
-                      .setTitle('Status!  :bar_chart:')
-                      .setDescription(`>>> Offline`)
-                      .setThumbnail('https://fontmeme.com/images/Dayz-Game.jpg')
-                      .addFields(
-                        { name: 'Ip', value: 'offline', inline: true},
-                        { name: 'Players', value: 'offline', inline: true },
-                        { name: 'Mapa (Map)', value: 'offline', inline: true })
-                      .addFields(
-                        { name: 'Horario (Time)', value: time, inline: true},
-                        { name: 'País (Country)', value: 'offline', inline: true },
-                        { name: 'Versão (Version)', value: 'offline', inline: true },
-                      )
-                      .addFields(
-                        { name: 'Mais informações (More info)', value: 'https://www.trackyserver.com/server/'+args[0], inline: true},
-                        { name: 'Atualizado em (updated at)', value: 'offline', inline: true },
-                      )
-                      .setTimestamp()
-      
-                      message.reply({ embeds: [StatusEmbed] }).then(msg => {
-                        setTimeout(() => msg.delete(), 20000)
-                      })
-                      .catch(console.error);
+                      offline_embed(args[0],message);
                     }
                 }catch (e){
                   console.error(e)
@@ -326,7 +354,7 @@ const client = new Client({
                   })
                   .catch(console.error);
                   } 
-              })
+              }).catch(() => offline_embed(args[0],message));
             }else{
               message.reply('Use !status <ServerID> : para mostrar o status do servidor.').then(msg => {
                 setTimeout(() => msg.delete(), 20000)
